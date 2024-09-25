@@ -112,3 +112,21 @@ class database:
       self.conn.rollback()
     finally:
       self.close()
+
+  def get_user(self):
+    try:
+      self.connect()
+      self.cursor.execute(f"SELECT * FROM {self.table} WHERE db_id = 0")
+      row = self.cursor.fetchone()
+      if row:
+        column_names = [description[0] for description in self.cursor.description]
+        user_data = dict(zip(column_names, row))
+        return user_data
+      else:
+        print("No user found with db_id = 0.")
+        return None
+    except sqlite3.Error as e:
+      print(f"An error occurred while fetching the user: {e}")
+      return None
+    finally:
+      self.close()

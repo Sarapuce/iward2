@@ -100,3 +100,13 @@ def send_email(email, user_headers):
     r = requests.post(signin_with_email_url, json=payload, headers=headers)
     print(r.text)
     return r.status_code
+
+def get_code(link):
+    code = link.split("custom_token=")[1].split("&new=1")[0]
+    payload = {
+        "token": code,
+        "returnSecureToken": True
+    }
+
+    r = requests.post("https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=AIzaSyBpVnvwRMvz9lP9A2cVBKIIutli4ZuCmm4", json=payload)
+    return r.json()["idToken"]

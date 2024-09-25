@@ -28,20 +28,20 @@ async function submitActivationForm(event) {
     const activationLink = document.getElementById('activation-link').value;
 
     try {
-        const response = await fetch('/add_user', {
+        const response = await fetch('/get_code', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ activation_link: activationLink }),
+            body: JSON.stringify({ link: activationLink }),
         });
 
         if (response.ok) {
-            alert('User added successfully!');
+            document.getElementById('information-message').textContent = 'Code got';
         } else {
-            alert('Failed to add user.');
+            document.getElementById('information-message').textContent = 'Failed to get code.';
         }
     } catch (error) {
-        alert('An error occurred.');
+        document.getElementById('information-message').textContent = 'Failed to get code.';
     }
 }

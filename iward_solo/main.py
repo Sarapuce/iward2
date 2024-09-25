@@ -27,6 +27,9 @@ class cookie_password(BaseModel):
 class email(BaseModel):
   email: EmailStr
 
+class link(BaseModel):
+  link: str
+
 @app.get("/debug") 
 async def debug():
   return {"message": "This is a debug page, there is nothing to see"}
@@ -36,7 +39,7 @@ async def main(request: Request, auth: str = Cookie(None)):
   if auth != PASSWORD:
    return templates.TemplateResponse("login.html", {"request": request})
   
-  return templates.TemplateResponse("index.html", {"request": request})
+  return templates.TemplateResponse("index.html", {"request": request, "user_info": u.get_user_info(), "db_info": u.get_db_info()})
 
 @app.post("/login") 
 async def login(item: cookie_password):
@@ -49,5 +52,16 @@ async def send_mail(item: email, request: Request, auth: str = Cookie(None)):
   if auth != PASSWORD:
     return HTTPException(404, detail="Not found")
   
-  u = user.user(item.email)
+  u.set_mail(item.email)
+  u.generate()
   utils.send_email(u.email, u.user_headers)
+
+@app.post("/get_code")
+async def get_code(item: link, request: Request, auth: str = Cookie(None)):
+  if auth != PASSWORD:
+    return HTTPException(404, detail="Not found")
+  
+  code = utils.get_code(item.link)
+  u.set_token(code)
+
+u = user.user()
