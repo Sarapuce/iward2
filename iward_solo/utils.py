@@ -24,16 +24,25 @@ sender_name             = decode(b'\x16$6 3%')
 
 user_agent = "okhttp/4.11.0"
 
-def generate_headers(user_headers, auth_token=""):
+def generate_headers(user_headers, payload, auth_token=""):
+  hex_tags = [
+     hex(random.randint(0x10000000, 0xffffffff))[2:],
+     hex(random.randint(0x1000000000000000, 0xffffffffffffffff))[2:],
+     hex(random.randint(0x1000000000000000, 0xffffffffffffffff))[2:]]
+  
+  json_payload = json.dumps(payload)
+
   headers = {
+    "Accept": "application/json",
     "Content-Type": "application/json",
     "Accept-Encoding": "gzip, deflate",
     "Host": host,
     "User-Agent": user_agent,
-    "Ww_app_version": "7.6.5",
+    "Ww_message_length": f"{len(json_payload)}",
+    "Ww_app_version": "7.9.0",
     "Ww_os": "android",
-    "Ww_os_version": "29",
-    "Ww_build_version": "242174",
+    "Ww_os_version": "33",
+    "Ww_build_version": "242216",
     "Ww_codepush_version": "base",
     "Ww-Unique-Device-Id": user_headers["unique_device_id"],
     "Ww_device_ts": str(int(time.time() * 1000)),
@@ -44,10 +53,19 @@ def generate_headers(user_headers, auth_token=""):
     "Ww_adjust_id": user_headers["adjust_id"],
     "Push_notification_enabled": "1",
     "Amplitude_device_id": user_headers["amplitude_id"],
-    "Ww_track": hashlib.sha256(str(uuid.uuid4()).encode()).hexdigest()
+    "Ww_track": hashlib.sha256(str(uuid.uuid4()).encode()).hexdigest(),
+    "X-Datadog-Origin": "rum",
+    "X-Datadog-Sampling-Priority": "0",
+    "X-Datadog-Trace-Id": str(random.randint(10000000000000000000, 99999999999999999999)),
+    "X-Datadog-Parent-Id": str(random.randint(10000000000000000000, 99999999999999999999)),
+    "X-Datadog-Tags": f"dd.p.tid={hex_tags[0]}00000000",
+    "Traceparent": f"00-{hex_tags[0]}00000000{hex_tags[1]}-{hex_tags[2]}-00",
+    "Tracestate": f"dd=s:0;o:rum;p:{hex_tags[2]}"
   }
   if auth_token:
       headers["Authorization"] = auth_token
+  else:
+      headers["Authorization"] = None
   return headers
 
 def get_google_token(weward_token):
@@ -73,3 +91,12 @@ def get_random_device():
     with open("./devices.json", "r") as f:
         devices = json.load(f)
     return devices[random.randint(0, len(devices))]
+
+def send_email(email, user_headers):
+    payload = {
+        "email": email
+        }
+    headers = generate_headers(user_headers, payload)
+    r = requests.post(signin_with_email_url, json=payload, headers=headers)
+    print(r.text)
+    return r.status_code

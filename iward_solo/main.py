@@ -50,3 +50,4 @@ async def send_mail(item: email, request: Request, auth: str = Cookie(None)):
     return HTTPException(404, detail="Not found")
   
   u = user.user(item.email)
+  utils.send_email(u.email, u.user_headers)
