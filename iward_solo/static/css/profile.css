@@ -1,0 +1,92 @@
+/* Body styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card styling */
+.card {
+    background-color: #ffffff;
+    width: 450px;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+}
+
+/* Title styling */
+h1 {
+    color: #333333;
+    font-size: 1.8em;
+    margin-bottom: 15px;
+}
+
+/* Paragraph styling */
+p {
+    font-size: 1.1em;
+    color: #555555;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* Button group styling for alignment */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Espace entre les boutons */
+    margin-bottom: 20px;
+}
+
+/* Button styling */
+.btn-disconnect {
+    background-color: #ff4b5c;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-disconnect:hover {
+    background-color: #ff1f3d;
+    box-shadow: 0 5px 15px rgba(255, 75, 92, 0.4);
+}
+
+.btn-debug {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-debug:hover {
+    background-color: #2980b9;
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+}
+
+/* Debug text styling */
+.debug-text {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    color: #444444;
+}

@@ -118,6 +118,7 @@ class database:
       self.connect()
       self.cursor.execute(f"SELECT * FROM {self.table} WHERE db_id = 0")
       row = self.cursor.fetchone()
+      print(row)
       if row:
         column_names = [description[0] for description in self.cursor.description]
         user_data = dict(zip(column_names, row))

@@ -39,6 +39,9 @@ async def main(request: Request, auth: str = Cookie(None)):
   if auth != PASSWORD:
    return templates.TemplateResponse("login.html", {"request": request})
   
+  if u.connected():
+    return templates.TemplateResponse("profile.html", {"request": request, "user_info": u.get_user_info(), "db_info": u.get_db_info()})
+  
   return templates.TemplateResponse("index.html", {"request": request, "user_info": u.get_user_info(), "db_info": u.get_db_info()})
 
 @app.post("/login") 

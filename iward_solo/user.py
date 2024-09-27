@@ -31,6 +31,7 @@ class user:
       self.token                 = user_infos["token"]
 
   def generate(self):
+    print("generating")
     self.user_headers = {
       "unique_device_id": hashlib.md5("{}{}".format(uuid.uuid4(), self.email).encode()).hexdigest()[:16],
       "ad_id":            str(uuid.uuid4()),
@@ -83,5 +84,26 @@ class user:
       "device_system_version": self.device_system_version
     }
   
+  def update_profile(self):
+    auth_token        = self.db.get_user()["token"]
+    server_data       = utils.get_user_info(self.user_headers, auth_token)
+    server_data_steps = utils.get_step_progress(self.user_headers, auth_token)
+
+    self.balance         = server_data["balance"]
+    self.today_balance   = server_data["today_balance"]
+    self.validated_steps = server_data_steps["valid_step"]
+    self.banned_cheater  = server_data["banned_cheater"]
+    self.id              = server_data["id"]
+    self.username        = server_data["username"]
+
+    self.db.update({
+      "balance": self.balance,
+      "today_balance": self.today_balance,
+      "validated_steps": self.validated_steps,
+      "banned_cheater": self.banned_cheater,
+      "id": self.id,
+      "username": self.username
+    })
+  
   def connected(self):
-    return self.token != ""
+    return self.token != None
