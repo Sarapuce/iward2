@@ -12,6 +12,7 @@ def decode(cipher):
         clear += chr(c ^ 0x41)
     return clear
 
+google_url              = decode(b')5512{nn666o&..&-$ 1(2o".,n(%$/5(585..-*(5n7rn3$-8(/&1 358n7$3(\'8\x02425.,\x15.*$/~*$8|\x00\x08; \x128\x031\x17/76\x13\x0c7;x-\x11x\x00s"\x17\x03\n\x08\x0845-(u\x1b4\x02,,u')
 validate_steps_url      = decode(b')5512{nn# "*$/%o13.%o6$6 3%o\'3n 1(n7poqn7 -(% 5$\x1e25$12')
 step_progress_url       = decode(b')5512{nn# "*$/%o13.%o6$6 3%o\'3n 1(n7poqn/$6\x1e25$1\x1e13.&3$22')
 get_profile_url         = decode(b')5512{nn# "*$/%o13.%o6$6 3%o\'3n 1(n7poqn"425.,$3n&$5\x1e13.\'(-$')
@@ -74,7 +75,7 @@ def get_google_token(weward_token):
         "returnSecureToken": True
     }
 
-    r = requests.post("https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=AIzaSyBpVnvwRMvz9lP9A2cVBKIIutli4ZuCmm4", json=payload)
+    r = requests.post(google_url, json=payload)
     return r.json()["idToken"]
 
 def get_auth_token(google_token, email, user_headers):
@@ -101,12 +102,16 @@ def send_email(email, user_headers):
     print(r.text)
     return r.status_code
 
-def get_code(link):
+def get_code(link, user_headers):
     code = link.split("custom_token=")[1].split("&new=1")[0]
-    payload = {
-        "token": code,
-        "returnSecureToken": True
-    }
+    google_token = get_google_token(code)
 
-    r = requests.post("https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=AIzaSyBpVnvwRMvz9lP9A2cVBKIIutli4ZuCmm4", json=payload)
-    return r.json()["idToken"]
+    payload = {
+        "id_token" : google_token,
+    }
+    headers = generate_headers(user_headers, payload)
+    r = requests.post(signin_id_token, json=payload, headers=headers)
+    if r.status_code != 200:
+        logging.debug("Message from server : {}".format(r.text))
+    return r.json()["token"]
+    

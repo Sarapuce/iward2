@@ -82,3 +82,6 @@ class user:
       "device_product": self.device_product,
       "device_system_version": self.device_system_version
     }
+  
+  def connected(self):
+    return self.token != ""

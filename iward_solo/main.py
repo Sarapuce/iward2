@@ -61,7 +61,7 @@ async def get_code(item: link, request: Request, auth: str = Cookie(None)):
   if auth != PASSWORD:
     return HTTPException(404, detail="Not found")
   
-  code = utils.get_code(item.link)
+  code = utils.get_code(item.link, u.user_headers)
   u.set_token(code)
 
 u = user.user()
