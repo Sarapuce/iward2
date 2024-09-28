@@ -39,7 +39,6 @@ def generate_headers(user_headers, payload, auth_token=""):
     "Accept-Encoding": "gzip, deflate",
     "Host": host,
     "User-Agent": user_agent,
-    "Ww_message_length": f"{len(json_payload)}",
     "Ww_app_version": "7.9.0",
     "Ww_os": "android",
     "Ww_os_version": "33",
@@ -47,7 +46,7 @@ def generate_headers(user_headers, payload, auth_token=""):
     "Ww_codepush_version": "base",
     "Ww-Unique-Device-Id": user_headers["unique_device_id"],
     "Ww_device_ts": str(int(time.time() * 1000)),
-    "Ww_device_timezone": "America/New_York",
+    "Ww_device_timezone": "Europe/Paris",
     "Ww_device_country": "US",
     "Ww_user_language": "en-US",
     "Ww_user_advertising_id": user_headers["ad_id"],
@@ -63,6 +62,8 @@ def generate_headers(user_headers, payload, auth_token=""):
     "Traceparent": f"00-{hex_tags[0]}00000000{hex_tags[1]}-{hex_tags[2]}-00",
     "Tracestate": f"dd=s:0;o:rum;p:{hex_tags[2]}"
   }
+  if len(payload) > 0:
+      headers["Ww_message_length"] = f"{len(json_payload)}"
   if auth_token:
       headers["Authorization"] = auth_token
   else:
@@ -105,7 +106,7 @@ def send_email(email, user_headers):
     return r.status_code
 
 def get_code(link, user_headers):
-    code = link.split("custom_token=")[1].split("&new=1")[0]
+    code = link.split("custom_token=")[1].split("&new")[0]
     google_token = get_google_token(code)
 
     payload = {
@@ -118,19 +119,21 @@ def get_code(link, user_headers):
     return r.json()["token"]
     
 def get_user_info(user_headers, auth_token):
-    headers = generate_headers(user_headers, auth_token)
+    headers = generate_headers(user_headers, "", auth_token)
     r = requests.get(get_profile_url, headers=headers)
     logging.debug("Answer from server : {}".format(r.status_code))
     return r.json()
 
-def get_step_progress(user_headers, auth_token):
-    headers = generate_headers(user_headers, auth_token)
-    r = requests.get(step_progress_url, headers=headers)
-    logging.debug("Answer from server : {}".format(r.status_code))
-    return r.json()
+# Headers must really be exact to call this endpoint; Too lazy to debug
+#
+# def get_step_progress(user_headers, auth_token):
+#     headers = generate_headers(user_headers, "", auth_token)
+#     r = requests.get(step_progress_url, headers=headers)
+#     logging.debug("Answer from server : {}".format(r.status_code))
+#     return r.json()
 
 def validate_steps(payload, user_headers, auth_token):
-    headers = generate_headers(user_headers, auth_token)
+    headers = generate_headers(user_headers, payload, auth_token)
     r = requests.post(validate_steps_url, headers=headers, json=payload)
     logging.debug("Answer from server : {}".format(r.status_code))
     if r.status_code != 200:

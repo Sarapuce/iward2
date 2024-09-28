@@ -40,11 +40,52 @@ p {
     line-height: 1.6;
 }
 
+/* Validation group styling */
+.validation-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+/* Input field styling */
+.input-field {
+    padding: 12px 20px;
+    width: 60%;
+    border: 1px solid #ccc;
+    border-radius: 50px;
+    font-size: 1.1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.input-field:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+/* Button validate styling */
+.btn-validate {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-validate:hover {
+    background-color: #218838;
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+}
+
 /* Button group styling for alignment */
 .button-group {
     display: flex;
     justify-content: center;
-    gap: 20px; /* Espace entre les boutons */
+    gap: 20px; /* Space between the buttons */
+    margin-top: 20px;
     margin-bottom: 20px;
 }
 
@@ -86,7 +127,4 @@ p {
     margin-top: 20px;
     padding: 15px;
     background-color: #f9f9f9;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    color: #444444;
-}
+    border: 1px solid #e0

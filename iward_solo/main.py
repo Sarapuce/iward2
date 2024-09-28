@@ -40,6 +40,7 @@ async def main(request: Request, auth: str = Cookie(None)):
    return templates.TemplateResponse("login.html", {"request": request})
   
   if u.connected():
+    u.update_profile()
     return templates.TemplateResponse("profile.html", {"request": request, "user_info": u.get_user_info(), "db_info": u.get_db_info()})
   
   return templates.TemplateResponse("index.html", {"request": request, "user_info": u.get_user_info(), "db_info": u.get_db_info()})
@@ -66,5 +67,13 @@ async def get_code(item: link, request: Request, auth: str = Cookie(None)):
   
   code = utils.get_code(item.link, u.user_headers)
   u.set_token(code)
+
+@app.post("/disconnect")
+async def get_code(request: Request, auth: str = Cookie(None)):
+  if auth != PASSWORD:
+    return HTTPException(404, detail="Not found")
+  
+  u.disconnect()
+  return RedirectResponse(url="/", status_code=303)
 
 u = user.user()

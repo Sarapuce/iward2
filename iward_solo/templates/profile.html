@@ -15,16 +15,23 @@
         <p>Pas d'auhourd'hui: {{ user_info.validated_today }}</p>
         <p>Next validation: {{ user_info.next_validation }}</p>
         <p>Banni ?: {{ "Non 🏴‍☠️" if user_info.banned_cheater else "Oui 😢" }}</p>
+
+        <div class="validation-group">
+            <input type="number" id="validation-number" placeholder="Steps to validate" class="input-field">
+            <button class="btn-validate" onclick="submitValidation()">Validate</button>
+        </div>
+
         <div class="button-group">
-            <form action="/disconnect" method="post">
-                <button type="submit" class="btn-disconnect">Se déconnecter</button>
-            </form>
+            <button class="btn-disconnect" onclick="submitDisconnect()">Se déconnecter</button>
             <button class="btn-debug" onclick="toggleDebug()">Debug</button>
         </div>
+
         <div id="debug-text" class="debug-text" style="display: none;">
             <p>{{ user_info }}</p>
         </div>
     </div>
+    <div id="information-message" class="message information-message" style="display: none;"></div>
+    <div id="error-message" class="message error-message" style="display: none;"></div>
     <script src="/static/js/profile.js"></script>
 </body>
 </html>

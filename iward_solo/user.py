@@ -2,6 +2,7 @@ import uuid
 import utils
 import random
 import hashlib
+import datetime
 import database
 
 class user:
@@ -15,7 +16,6 @@ class user:
       self.email = email
       self.generate()
     else:
-      print(user_infos)
       self.email = user_infos['email']
       self.user_headers = {
         "unique_device_id": user_infos["unique_device_id"],
@@ -87,11 +87,14 @@ class user:
   def update_profile(self):
     auth_token        = self.db.get_user()["token"]
     server_data       = utils.get_user_info(self.user_headers, auth_token)
-    server_data_steps = utils.get_step_progress(self.user_headers, auth_token)
+    # server_data_steps = utils.get_step_progress(self.user_headers, auth_token)
 
+    if server_data.get("message", "") == "Login required":
+      return False
+    
     self.balance         = server_data["balance"]
     self.today_balance   = server_data["today_balance"]
-    self.validated_steps = server_data_steps["valid_step"]
+    # self.validated_steps = server_data_steps["valid_step"]
     self.banned_cheater  = server_data["banned_cheater"]
     self.id              = server_data["id"]
     self.username        = server_data["username"]
@@ -99,11 +102,56 @@ class user:
     self.db.update({
       "balance": self.balance,
       "today_balance": self.today_balance,
+      # "validated_steps": self.validated_steps,
+      "banned_cheater": self.banned_cheater,
+      "id": self.id,
+      "username": self.username
+    })
+
+  def check_validation(self):
+    if self.validated_today:
+      return True
+    
+    now = datetime.now()
+    next_validation = [int(i) for i in self.next_validation.split(":")]
+    if (next_validation[0] == now.hour and next_validation[1] <= now.minute) or next_validation[0] < now.hour:
+      self.validated_today = True
+      self.db.update(self.email, {"validated_today": self.validated_today})
+      return self.validate_steps()
+
+  def set_timer(self):
+    self.validated_today = False
+    if random.randint(0, 10) == 5:
+      self.validated_today = True
+    
+    validation_raw       = random.randint(1080, 1380)
+    self.next_validation = "{}:{}".format(str(validation_raw // 60).zfill(2), str(validation_raw % 60).zfill(2))
+    self.db.update(self.email, {"next_validation": self.next_validation, "validated_today": self.validated_today})
+    return True
+
+  def reset_new_day(self):
+    self.validate_steps = 0
+    self.today_balance  = 0
+    self.db.update(self.email, {"validate_steps": self.validate_steps, "today_balance": self.today_balance})
+  
+  def connected(self):
+    return self.token != None and self.token != ""
+  
+  def disconnect(self):
+    # Not very DRY but the user connection is checked by the presence of token value
+    self.token           = ""
+    self.balance         = 0
+    self.today_balance   = 0
+    self.validated_steps = 0
+    self.banned_cheater  = 0
+    self.id              = 0
+    self.username        = 0
+    self.db.update({
+      "token": self.token,
+      "balance": self.balance,
+      "today_balance": self.balance,
       "validated_steps": self.validated_steps,
       "banned_cheater": self.banned_cheater,
       "id": self.id,
       "username": self.username
     })
-  
-  def connected(self):
-    return self.token != None
