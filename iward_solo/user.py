@@ -29,9 +29,10 @@ class user:
       self.device_product        = user_infos["device_product"]
       self.device_system_version = user_infos["device_system_version"]
       self.token                 = user_infos["token"]
+      self.next_validation       = user_infos["next_validation"]
 
   def generate(self):
-    print("generating")
+    print("Generating user")
     self.user_headers = {
       "unique_device_id": hashlib.md5("{}{}".format(uuid.uuid4(), self.email).encode()).hexdigest()[:16],
       "ad_id":            str(uuid.uuid4()),
@@ -81,20 +82,27 @@ class user:
       "device_manufacturer" : self.device_manufacturer,
       "device_model": self.device_model,
       "device_product": self.device_product,
-      "device_system_version": self.device_system_version
+      "device_system_version": self.device_system_version,
+      "balance": self.balance,
+      "today_balance": self.today_balance,
+      "validated_steps": self.validated_steps,
+      "banned_cheater": self.banned_cheater,
+      "id": self.id,
+      "username": self.username,
+      "next_validation": self.next_validation
     }
   
   def update_profile(self):
     auth_token        = self.db.get_user()["token"]
     server_data       = utils.get_user_info(self.user_headers, auth_token)
-    # server_data_steps = utils.get_step_progress(self.user_headers, auth_token)
+    server_data_steps = utils.get_step_progress(self.user_headers, auth_token)
 
     if server_data.get("message", "") == "Login required":
       return False
     
     self.balance         = server_data["balance"]
     self.today_balance   = server_data["today_balance"]
-    # self.validated_steps = server_data_steps["valid_step"]
+    self.validated_steps = server_data_steps["valid_step"]
     self.banned_cheater  = server_data["banned_cheater"]
     self.id              = server_data["id"]
     self.username        = server_data["username"]
@@ -102,7 +110,7 @@ class user:
     self.db.update({
       "balance": self.balance,
       "today_balance": self.today_balance,
-      # "validated_steps": self.validated_steps,
+      "validated_steps": self.validated_steps,
       "banned_cheater": self.banned_cheater,
       "id": self.id,
       "username": self.username

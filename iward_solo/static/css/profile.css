@@ -16,13 +16,16 @@ body {
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    text-align: center;
     transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .card:hover {
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
     transform: translateY(-5px);
+}
+
+.card h1, .card p {
+    text-align: left;
 }
 
 /* Title styling */

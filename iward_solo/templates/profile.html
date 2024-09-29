@@ -9,12 +9,12 @@
 </head>
 <body>
     <div class="card">
-        <h1>Email: {{ user_info.email }}</h1>
-        <p>Wards: {{ user_info.balance }}</p>
-        <p>Wards d'aujourd'hui: {{ user_info.balance }}</p>
-        <p>Pas d'auhourd'hui: {{ user_info.validated_today }}</p>
-        <p>Next validation: {{ user_info.next_validation }}</p>
-        <p>Banni ?: {{ "Non 🏴‍☠️" if user_info.banned_cheater else "Oui 😢" }}</p>
+        <h1>Email {{ user_info.email }}</h1>
+        <p>Wards : {{ user_info.balance }}</p>
+        <p>Wards d'aujourd'hui : {{ user_info.today_balance if user_info.today_balance else 0}}</p>
+        <p>Pas d'aujourd'hui : {{ user_info.validated_today if user_info.validated_today else 0 }}</p>
+        <p>Next validation : {{ user_info.next_validation }}</p>
+        <p>Banni ? {{ "Oui 😢" if user_info.banned_cheater else "Non 🏴‍☠️" }}</p>
 
         <div class="validation-group">
             <input type="number" id="validation-number" placeholder="Steps to validate" class="input-field">
