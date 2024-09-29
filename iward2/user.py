@@ -47,6 +47,7 @@ class user:
     self.device_model          = device["model"]
     self.device_product        = "{}_{}".format(self.device_manufacturer, self.device_model.replace(" ", "_"))
     self.device_system_version = "{}.0".format(random.randint(10, 14))
+    self.validated_today       = False
     self.db.update({
       "email":                 self.email,
       "unique_device_id":      self.user_headers["unique_device_id"],
@@ -57,7 +58,8 @@ class user:
       "device_manufacturer":   self.device_manufacturer,
       "device_model":          self.device_model,
       "device_product":        self.device_product,
-      "device_system_version": self.device_system_version
+      "device_system_version": self.device_system_version,
+      "validated_today":       self.validated_today
     })
 
   def set_mail(self, email):
@@ -124,6 +126,9 @@ class user:
       logging.info("  Already validated")
       return True
     
+    if not self.next_validation:
+      self.set_timer()
+
     now = datetime.now()
     next_validation = [int(i) for i in self.next_validation.split(":")]
     logging.info("  next_validation : {next_validation}\n now.hour : {now.hour} | now.minute : {now.minute}")
