@@ -56,7 +56,6 @@ function showMessage(type, message) {
     messageElement.style.fontSize = '1em';
     messageElement.style.zIndex = '1000';
 
-    // Keep the message displayed for 5 seconds before starting to fade out
     setTimeout(() => {
         let opacity = 1;
         const fadeInterval = setInterval(() => {
@@ -67,8 +66,8 @@ function showMessage(type, message) {
                 opacity -= 0.05;
                 messageElement.style.opacity = opacity.toString();
             }
-        }, 50);  // Decrease opacity every 50ms
-    }, 5000);  // Start fading after 5 seconds
+        }, 50);
+    }, 5000);
 }
 
 async function submitValidation() {
@@ -85,6 +84,9 @@ async function submitValidation() {
 
         if (response.ok) {
             showMessage('info', 'Validation done.');
+            setTimeout(() => {
+                window.location.reload();  // Refresh the page
+            }, 1000);
         } else {
             showMessage('error', 'Validation failed. Please try again.');
         }

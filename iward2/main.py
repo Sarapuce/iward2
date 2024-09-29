@@ -4,8 +4,8 @@ import utils
 import logging
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from fastapi import FastAPI, Cookie, HTTPException, Response, Request
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi import FastAPI, Cookie, HTTPException, Request
+from fastapi.responses import RedirectResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, EmailStr
@@ -94,6 +94,10 @@ async def get_code(item: step_number, request: Request, auth: str = Cookie(None)
   u.validate_steps(item.step_number)
   u.update_profile()
   return RedirectResponse(url="/", status_code=303)
+
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse("./static/icon.ico")
 
 u = user.user()
 
