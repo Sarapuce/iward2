@@ -130,4 +130,22 @@ p {
     margin-top: 20px;
     padding: 15px;
     background-color: #f9f9f9;
-    border: 1px solid #e0
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    color: #444444;
+}
+
+.information-message {
+    background-color: #3498db;
+    color: white;
+    border: 1px solid #2980b9;
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+}
+
+/* Styles pour les messages d'erreur */
+.error-message {
+    background-color: #e74c3c;
+    color: white;
+    border: 1px solid #c0392b;
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+}

@@ -1,21 +1,23 @@
 import uuid
 import utils
 import random
+import logging
 import hashlib
 import datetime
 import database
 
 class user:
   def __init__(self, email="user@example.com"):
-    
     self.db = database.database()
     
     user_infos = self.db.get_user()
 
     if not user_infos:
+      logging.info("User not found, creating one")
       self.email = email
       self.generate()
     else:
+      logging.info("Loading user info")
       self.email = user_infos['email']
       self.user_headers = {
         "unique_device_id": user_infos["unique_device_id"],
@@ -32,7 +34,7 @@ class user:
       self.next_validation       = user_infos["next_validation"]
 
   def generate(self):
-    print("Generating user")
+    logging.info("Generating user")
     self.user_headers = {
       "unique_device_id": hashlib.md5("{}{}".format(uuid.uuid4(), self.email).encode()).hexdigest()[:16],
       "ad_id":            str(uuid.uuid4()),
@@ -117,30 +119,37 @@ class user:
     })
 
   def check_validation(self):
+    logging.info("Checking validation")
     if self.validated_today:
+      logging.info("  Already validated")
       return True
     
     now = datetime.now()
     next_validation = [int(i) for i in self.next_validation.split(":")]
+    logging.info("  next_validation : {next_validation}\n now.hour : {now.hour} | now.minute : {now.minute}")
     if (next_validation[0] == now.hour and next_validation[1] <= now.minute) or next_validation[0] < now.hour:
+      logging.info("  Validation")
       self.validated_today = True
-      self.db.update(self.email, {"validated_today": self.validated_today})
+      self.db.update({"validated_today": self.validated_today})
       return self.validate_steps()
 
   def set_timer(self):
+    logging.info("Reseting timer")
     self.validated_today = False
-    if random.randint(0, 10) == 5:
+    if random.randint(0, 15) == 5:
       self.validated_today = True
-    
+    # Validate between 18 and 23
     validation_raw       = random.randint(1080, 1380)
     self.next_validation = "{}:{}".format(str(validation_raw // 60).zfill(2), str(validation_raw % 60).zfill(2))
-    self.db.update(self.email, {"next_validation": self.next_validation, "validated_today": self.validated_today})
+    self.db.update({"next_validation": self.next_validation, "validated_today": self.validated_today})
     return True
 
   def reset_new_day(self):
+    logging.info("New day")
     self.validate_steps = 0
     self.today_balance  = 0
-    self.db.update(self.email, {"validate_steps": self.validate_steps, "today_balance": self.today_balance})
+    self.db.update({"validate_steps": self.validate_steps, "today_balance": self.today_balance})
+    self.set_timer()
   
   def connected(self):
     return self.token != None and self.token != ""
@@ -163,3 +172,25 @@ class user:
       "id": self.id,
       "username": self.username
     })
+
+  def validate_steps(self, step_number=0):
+    self.update_profile()
+    if self.validated_steps > 10000:
+      return False
+    
+    if not step_number:
+      step_number = 19700 + random.randint(0, 2000)
+    device_uptime_ms = random.randint(3870000, 10000000)
+    payload = {
+      "amount" : step_number,
+      "steps_needing_validation" : None,
+      "device_id" : self.device_id,
+      "device_manufacturer" : self.device_manufacturer,
+      "device_model" : self.device_model,
+      "device_product" : self.device_product,
+      "device_system_name" : "Android",
+      "device_system_version" : self.device_system_version,
+      "device_uptime_ms" : device_uptime_ms,
+      "steps_source" : "GoogleFit"
+    }
+    return utils.validate_steps(payload, self.user_headers, self.token)

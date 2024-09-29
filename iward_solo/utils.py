@@ -1,7 +1,6 @@
 import json
 import hmac
 import time
-import uuid
 import random
 import hashlib
 import logging
@@ -75,14 +74,13 @@ def generate_headers(user_headers, payload, auth_token=""):
     return headers
 
 def get_google_token(weward_token):
-    print(weward_token)
+    logging.info(f"Extracted token : {weward_token}")
     payload = {
         "token": weward_token,
         "returnSecureToken": True
     }
 
     r = requests.post(google_url, json=payload)
-    print(r.text)
     return r.json()["idToken"]
 
 def get_auth_token(google_token, email, user_headers):
@@ -92,7 +90,7 @@ def get_auth_token(google_token, email, user_headers):
 
     r = requests.post(signin_id_token, json=payload, headers=user_headers)
     if r.status_code != 200:
-        logging.debug("Message from server : {}".format(r.text))
+        logging.error("Message from server : {}".format(r.text))
     return r.json()["token"]
 
 def get_random_device():
@@ -106,7 +104,7 @@ def send_email(email, user_headers):
         }
     headers = generate_headers(user_headers, payload)
     r = requests.post(signin_with_email_url, json=payload, headers=headers)
-    print(r.text)
+    logging.info(f"Message from sending mail : {r.text}")
     return r.status_code
 
 def get_code(link, user_headers):
@@ -119,27 +117,27 @@ def get_code(link, user_headers):
     headers = generate_headers(user_headers, payload)
     r = requests.post(signin_id_token, json=payload, headers=headers)
     if r.status_code != 200:
-        logging.debug("Message from server : {}".format(r.text))
+        logging.error("Message from server : {}".format(r.text))
     return r.json()["token"]
     
 def get_user_info(user_headers, auth_token):
     headers = generate_headers(user_headers, "", auth_token)
     r = requests.get(get_profile_url, headers=headers)
-    logging.debug("Answer from server : {}".format(r.status_code))
+    logging.info("Answer from server : {}".format(r.status_code))
     return r.json()
 
 def get_step_progress(user_headers, auth_token):
     headers = generate_headers(user_headers, "", auth_token)
     r = requests.get(step_progress_url, headers=headers)
-    logging.debug("Answer from server : {}".format(r.status_code))
+    logging.info("Answer from server : {}".format(r.status_code))
     return r.json()
 
 def validate_steps(payload, user_headers, auth_token):
     headers = generate_headers(user_headers, payload, auth_token)
     r = requests.post(validate_steps_url, headers=headers, json=payload)
-    logging.debug("Answer from server : {}".format(r.status_code))
+    logging.info("Answer from server : {}".format(r.status_code))
     if r.status_code != 200:
-        logging.debug("Answer from server : {}".format(r.text))
+        logging.error("Answer from server : {}".format(r.text))
         return False
     return True
 

@@ -1,4 +1,4 @@
-import os
+import logging
 import sqlite3
 
 class database:
@@ -33,22 +33,22 @@ class database:
     try:
       self.conn = sqlite3.connect(self.db_name)
       self.cursor = self.conn.cursor()
-      print(f"Connected to the database '{self.db_name}' successfully.")
+      logging.debug(f"Connected to the database '{self.db_name}' successfully.")
       
     except sqlite3.Error as e:
-      print(f"An error occurred while connecting to the database: {e}")
+      logging.error(f"An error occurred while connecting to the database: {e}")
       raise
   
   def close(self):
     try:
       if self.cursor:
         self.cursor.close()
-        print("Cursor closed.")
+        logging.debug("Cursor closed.")
       if self.conn:
         self.conn.close()
-        print(f"Connection to the database '{self.db_name}' closed.")
+        logging.debug(f"Connection to the database '{self.db_name}' closed.")
     except sqlite3.Error as e:
-      print(f"An error occurred while closing the database: {e}")
+      logging.error(f"An error occurred while closing the database: {e}")
     finally:
       self.conn = None
       self.cursor = None
@@ -58,7 +58,7 @@ class database:
       self.connect()
       self.cursor.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({schema})")
       self.conn.commit()
-      print(f"Table '{table_name}' is ready.")
+      logging.debug(f"Table '{table_name}' is ready.")
 
       self.cursor.execute(f"SELECT COUNT(*) FROM {table_name} WHERE db_id = 0")
       user_count = self.cursor.fetchone()[0]
@@ -91,11 +91,11 @@ class database:
         insert_query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
         self.cursor.execute(insert_query, tuple(default_user.values()))
         self.conn.commit()
-        print("Default user created.")
+        logging.info("Default user created.")
       else:
-        print("User already exist")
+        logging.debug("User already exist")
     except sqlite3.Error as e:
-      print(f"An error occurred while creating the table: {e}")
+      logging.error(f"An error occurred while creating the table: {e}")
     finally:
       self.close()
 
@@ -106,9 +106,9 @@ class database:
       sql = f"UPDATE {self.table} SET {set_clause} WHERE db_id = 0"
       self.cursor.execute(sql, tuple(update_data.values()))
       self.conn.commit()
-      print(f"Updated {self.cursor.rowcount} row(s) successfully.")
+      logging.info(f"Updated {self.cursor.rowcount} row(s) successfully.")
     except sqlite3.Error as e:
-      print(f"An error occurred while updating the table: {e}")
+      logging.error(f"An error occurred while updating the table: {e}")
       self.conn.rollback()
     finally:
       self.close()
@@ -118,16 +118,16 @@ class database:
       self.connect()
       self.cursor.execute(f"SELECT * FROM {self.table} WHERE db_id = 0")
       row = self.cursor.fetchone()
-      print(row)
+      logging.info(f"Get user info from database : {row}")
       if row:
         column_names = [description[0] for description in self.cursor.description]
         user_data = dict(zip(column_names, row))
         return user_data
       else:
-        print("No user found with db_id = 0.")
+        logging.error("No user found with db_id = 0.")
         return None
     except sqlite3.Error as e:
-      print(f"An error occurred while fetching the user: {e}")
+      logging.error(f"An error occurred while fetching the user: {e}")
       return None
     finally:
       self.close()

@@ -3,19 +3,26 @@ import user
 import utils
 import logging
 
+from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI, Cookie, HTTPException, Response, Request
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
 from pydantic import BaseModel, EmailStr
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
 
 app = FastAPI()   
 PASSWORD = os.getenv("PASSWORD")
 
 if not PASSWORD:
-  logging.debug("PASSWORD not set")
+  logging.error("PASSWORD not set")
   exit()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -29,6 +36,9 @@ class email(BaseModel):
 
 class link(BaseModel):
   link: str
+
+class step_number(BaseModel):
+  step_number: int
 
 @app.get("/debug") 
 async def debug():
@@ -76,4 +86,26 @@ async def get_code(request: Request, auth: str = Cookie(None)):
   u.disconnect()
   return RedirectResponse(url="/", status_code=303)
 
+@app.post("/validate_steps")
+async def get_code(item: step_number, request: Request, auth: str = Cookie(None)):
+  if auth != PASSWORD:
+    return HTTPException(404, detail="Not found")
+  
+  u.validate_steps(item.step_number)
+  u.update_profile()
+  return RedirectResponse(url="/", status_code=303)
+
 u = user.user()
+
+def reset_new_day():
+  logging.info("Reseting timer")
+  u.reset_new_day()
+
+def check_validation():
+  logging.info("Checking validation")
+  u.check_validation()
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(reset_new_day, 'cron', hour=0, minute=0)
+scheduler.add_job(check_validation, 'interval', minutes=2)
+scheduler.start()
