@@ -2,15 +2,15 @@
 
 ## Disclaimer : 
 
-This is a side project to learn how to reverse a mobile app. I won't use it since I have a job and don't care about 30€ vouchers. If you are part of the WW team and want me to hide this project, don't hesitate to contact me at alexandre.herve97@gmail.com
+This is a side project to learn how to reverse a mobile app and create a webapp in a Kubernetes cluster. I won't use it since I have a job and don't care about 30€ vouchers. If you are part of the WW team and want me to hide this project, don't hesitate to contact me at alexandre.herve97@gmail.com
 
 ## Usage :
 
 ### Docker container :
 
 1. Build the container `docker build . -t iward:2`
-2. Run it by exposing the 8000 port, presising the path of the database and mounting the volumes `docker run -e DBPATH=/db/db.sqlite3 -e PASSWORD=pass -v /path/to/db.sqlite3:/db/ -p 8000:8000 iward:2`
-3. Connect in your favorite browser in http://localhost:8000
+2. Run it by exposing port 8000, specifying the path of the database, and mounting the volumes with the following command: `docker run -e DBPATH=/db/db.sqlite3 -e PASSWORD=pass -v /path/to/db.sqlite3:/db/ -p 8000:8000 iward:2`
+3. Connect to http://localhost:8000 in your favorite browser
 
 ### local :
 
@@ -18,7 +18,7 @@ This is a side project to learn how to reverse a mobile app. I won't use it sinc
 2. Install poetry dependencies `poetry install`
 3. Start a poetry shell `poetry shell`
 4. Start the uvicorn server `cd iward2` and `uvicorn main:app --reload`
-5. Connect in your favorite browser in http://localhost:8000
+5. Connect to http://localhost:8000 in your favorite browser.
 
 ### Kubernetes :
 
