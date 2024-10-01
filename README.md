@@ -126,6 +126,7 @@ spec:
 ## How does it works ?
 
 1. Log in to the app with the password set in env variable. The default one is `password` (I should use a hash but I'm lazy)
-2. Input the email you want to use in the first field
-3. Copy the link in your email address and paste it in the second field
-4. You should have an interface which shows you how much ward you have
+2. There are CSRF but I'm also to lazy to patch them
+3. Input the email you want to use in the first field
+4. Copy the link in your email address and paste it in the second field
+5. You should have an interface which shows you how much ward you have
