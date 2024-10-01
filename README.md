@@ -22,7 +22,106 @@ This is a side project ot learn how to reverse a mobile app. I won't use it sinc
 
 ### Kubernetes :
 
-Helm chart incoming
+1. You need to create a PV with ReadWriteMany. You don't need a lot a space 10Mi should be enough
+
+```
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: iward-pv
+  namespace: iward2
+  labels:
+    name: iward2
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 10Mi
+  accessModes:
+    - ReadWriteMany
+  local:
+    path: /mnt
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kind-control-plane
+```
+
+2. Create a PVC to attach it to the pods
+
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: iward-pvc
+  namespace: iward2
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Mi
+  selector:
+    matchLabels:
+      name: iward2
+```
+
+3. Create the deployment
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iward2
+  namespace: iward2
+spec:
+  replicas: 2   # Multiple pods sharing the same file
+  selector:
+    matchLabels:
+      app: iward2
+  template:
+    metadata:
+      labels:
+        app: iward2
+    spec:
+      containers:
+      - name: iward2
+        image: sarapuce/iward:2
+        env:
+        - name: PASSWORD
+          value: "PASSWORD" # Please use a real secret
+        - name: DBPATH
+          value: "/db/db.sqlite3"
+        volumeMounts:
+        - name: iward-db
+          mountPath: /db
+      volumes:
+      - name: iward-db
+        persistentVolumeClaim:
+          claimName: iward-pvc
+```
+
+4. Expose everything with a service
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: iward2
+spec:
+  selector:
+    app: iward2
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP
+```
+
+5. Now, use what is specific to your cluster to access your application
 
 ## How does it works ?
 

@@ -94,7 +94,7 @@ def send_email(email, user_headers):
         "email": email
         }
     headers = generate_headers(user_headers, payload)
-    r = requests.post(signin_with_email_url, json=payload, headers=headers, proxies=proxies)
+    r = requests.post(signin_with_email_url, json=payload, headers=headers)
     logging.info(f"Message from sending mail : {r.text}")
     return r.status_code
 
