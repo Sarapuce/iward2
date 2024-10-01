@@ -12,7 +12,7 @@ This is a side project to learn how to reverse a mobile app and create a webapp 
 2. Run it by exposing port 8000, specifying the path of the database, and mounting the volumes with the following command: `docker run -e DBPATH=/db/db.sqlite3 -e PASSWORD=pass -v /path/to/db.sqlite3:/db/ -p 8000:8000 iward:2`
 3. Connect to http://localhost:8000 in your favorite browser
 
-### local :
+### Local :
 
 1. [Install poetry](https://python-poetry.org/docs/)
 2. Install poetry dependencies `poetry install`
