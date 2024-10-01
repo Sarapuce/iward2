@@ -2,7 +2,7 @@
 
 ## Disclaimer : 
 
-This is a side project ot learn how to reverse a mobile app. I won't use it since I have a job and don't care about 30€ vouchers. If you are part of the WW team and want me to hide this project, don't hesitate to contact me at alexandre.herve97@gmail.com
+This is a side project to learn how to reverse a mobile app. I won't use it since I have a job and don't care about 30€ vouchers. If you are part of the WW team and want me to hide this project, don't hesitate to contact me at alexandre.herve97@gmail.com
 
 ## Usage :
 
