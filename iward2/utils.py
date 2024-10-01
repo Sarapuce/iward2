@@ -83,27 +83,18 @@ def get_google_token(weward_token):
     r = requests.post(google_url, json=payload)
     return r.json()["idToken"]
 
-def get_auth_token(google_token, email, user_headers):
-    payload = {
-        "id_token" : google_token,
-    }
-
-    r = requests.post(signin_id_token, json=payload, headers=user_headers)
-    if r.status_code != 200:
-        logging.error("Message from server : {}".format(r.text))
-    return r.json()["token"]
-
 def get_random_device():
     with open("./devices.json", "r") as f:
         devices = json.load(f)
     return devices[random.randint(0, len(devices))]
 
 def send_email(email, user_headers):
+    logging.info("Sending mail...")
     payload = {
         "email": email
         }
     headers = generate_headers(user_headers, payload)
-    r = requests.post(signin_with_email_url, json=payload, headers=headers)
+    r = requests.post(signin_with_email_url, json=payload, headers=headers, proxies=proxies)
     logging.info(f"Message from sending mail : {r.text}")
     return r.status_code
 

@@ -1,3 +1,4 @@
+import os
 import uuid
 import utils
 import random
@@ -7,9 +8,11 @@ import database
 
 from datetime import datetime
 
+db_path = os.getenv("DBPATH", "db.sqlite3")
+
 class user:
   def __init__(self, email="user@example.com"):
-    self.db = database.database()
+    self.db = database.database(db_name=db_path)
     
     user_infos = self.db.get_user()
 
