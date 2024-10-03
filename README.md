@@ -17,8 +17,9 @@ This is a side project to learn how to reverse a mobile app and create a webapp 
 1. [Install poetry](https://python-poetry.org/docs/)
 2. Install poetry dependencies `poetry install`
 3. Start a poetry shell `poetry shell`
-4. Start the uvicorn server `cd iward2` and `uvicorn main:app --reload`
-5. Connect to http://localhost:8000 in your favorite browser.
+4. Set `PASSWORD` variable
+5. Start the uvicorn server `cd iward2` and `uvicorn main:app --reload`
+6. Connect to http://localhost:8000 in your favorite browser.
 
 ### Kubernetes :
 
@@ -125,8 +126,9 @@ spec:
 
 ## How does it works ?
 
-1. Log in to the app with the password set in env variable. The default one is `password` (I should use a hash but I'm lazy)
+1. Log in to the app with the `PASSWORD` set in env variable. The default one is `password` (I should use a hash but I'm lazy)
 2. There are CSRF but I'm also to lazy to patch them
 3. Input the email you want to use in the first field
 4. Copy the link in your email address and paste it in the second field
 5. You should have an interface which shows you how much ward you have
+6. You can just let the application validate your steps automatically every day or input a number to do a manual validation
