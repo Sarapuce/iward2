@@ -210,6 +210,7 @@ class user:
     
     self.update_profile()
     if self.validated_steps > 10000:
+      logging.info("Already validated today, not sending the payload")
       return False
     
     if not step_number:

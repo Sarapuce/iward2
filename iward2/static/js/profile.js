@@ -72,6 +72,7 @@ function showMessage(type, message) {
 
 async function submitValidation() {
     const number = document.getElementById('validation-number').value;
+    const stepNumber = number ? parseInt(number) : Math.floor(Math.random() * (25000 - 19000 + 1)) + 19000;
 
     try {
         const response = await fetch('/validate_steps', {
@@ -79,7 +80,7 @@ async function submitValidation() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ step_number: number }),
+            body: JSON.stringify({ step_number: stepNumber }),
         });
 
         if (response.ok) {
